@@ -43,7 +43,7 @@ const getFloorInterval = async (interaction, slug) => {
       title: `${result.collection.name} Floor is ${trendText} ${emoji}`,
       thumbnail: result.collection.featured_image_url,
       color: "RANDOM",
-      description: `Floor is **${floor}**\n\n~~ *Last floor was* ***${lastFloor}***`,
+      description: `Floor is **${floor}**\n\n~~ Last floor was **${lastFloor}**`,
       footer: slug,
     });
 
