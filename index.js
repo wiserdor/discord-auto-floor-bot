@@ -44,6 +44,7 @@ const getFloorInterval = async (interaction, slug) => {
       thumbnail: result.collection.featured_image_url,
       color: "RANDOM",
       description: `Floor is **${floor}**`,
+      footer: slug,
     });
 
     return await interaction.reply({ embeds: [embed] });
@@ -68,9 +69,9 @@ client.on("interactionCreate", async (interaction) => {
       const response = await axios.get(`${COLLECTION_BASE_URL}${slug}`);
       if (response.status !== 200) {
         const errorEmbed = new MessageEmbed({
-          title: "Couldn't find slug provided",
+          title: "Couldn't find slug provided: " + slug,
           color: "RED",
-          description: "Couldn't find slug provided",
+          description: "Couldn't find slug provided: " + slug,
         });
         return interaction.reply({ embeds: [errorEmbed] });
       }
@@ -82,6 +83,7 @@ client.on("interactionCreate", async (interaction) => {
         thumbnail: result.collection.featured_image_url,
         color: "RANDOM",
         description: `Floor is **${floor}**`,
+        footer: slug,
       });
 
       return await interaction.reply({ embeds: [embed] });
@@ -146,28 +148,32 @@ client.on("interactionCreate", async (interaction) => {
       console.error(err);
     }
   } else if (commandName === "list") {
-    if (openseaCollections.size === 0)
-      return interaction.reply("List is empty");
-    const embed = new MessageEmbed({
-      color: 3447003,
-      title: "Floor Prices List:",
-      fields: [
-        {
-          name: "Slugs",
-          value: [...openseaCollections.keys()].join("\n"),
-          inline: true,
-        },
-        {
-          name: "Floor",
-          value: [...collectionLastFloor.values()].join("\n"),
-          inline: true,
-        },
-      ],
-    });
+    try {
+      if (openseaCollections.size === 0)
+        return interaction.reply("List is empty");
+      const embed = new MessageEmbed({
+        color: 3447003,
+        title: "Floor Prices List:",
+        fields: [
+          {
+            name: "Slugs",
+            value: [...openseaCollections.keys()].join("\n"),
+            inline: true,
+          },
+          {
+            name: "Floor",
+            value: [...collectionLastFloor.values()].join("\n"),
+            inline: true,
+          },
+        ],
+      });
 
-    interaction.reply({
-      embeds: [embed],
-    });
+      interaction.reply({
+        embeds: [embed],
+      });
+    } catch (err) {
+      console.error(err);
+    }
   }
 });
 
