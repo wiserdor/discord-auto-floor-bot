@@ -1,5 +1,5 @@
 {
-  "guildId": "926367555038367765",
-  "clientId": "926429515729756212",
-  "token": "OTI2NDI5NTE1NzI5NzU2MjEy.Yc7iuA.LLSWWH2N8tCTcmHBGNyZF3L1w7Q"
+  "guildId": {guildId},
+  "clientId": {clientId},
+  "token": {tokenId}
 }
