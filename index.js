@@ -203,7 +203,6 @@ client.on("interactionCreate", async (interaction) => {
 
 client.once("ready", async () => {
   console.log("lets go");
-  client.channels.cache.get("925519845318098954").send("hi");
 });
 
 client.login(token);
