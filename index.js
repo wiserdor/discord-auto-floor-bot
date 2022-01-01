@@ -1,5 +1,6 @@
 const { Client, Intents, MessageEmbed, Emoji } = require("discord.js");
 const { token } = require("./config.json");
+const gis = require("g-i-s");
 const axios = require("axios");
 
 const openseaCollections = new Map();
@@ -9,6 +10,21 @@ const INTERVAL_MIN = 5;
 const EQUALS_EMOJI = "";
 const ROCKET_EMOJI = ":rocket:";
 const DOWN_EMOJI = ":chart_with_downwards_trend:";
+
+const getGIS = (nftName) =>
+  new Promise((resolve, reject) => {
+    try {
+      gis(nftName, (error, results) => {
+        if (error) {
+          return resolve("");
+        } else {
+          return resolve(results[0].url);
+        }
+      });
+    } catch {
+      resolve("");
+    }
+  });
 
 const removeSlug = (slug) => {
   if (!openseaCollections.has(slug)) return;
@@ -39,13 +55,14 @@ const getFloorInterval = async (channel, slug) => {
     } else return;
 
     collectionLastFloor.set(slug, floor);
+    const imgUrl = await getGIS(result.collection.name + " nft");
 
     const embed = new MessageEmbed({
       title: `${result.collection.name} Floor is ${trendText} ${emoji}`,
-      thumbnail: result.collection.featured_image_url,
       color: "RANDOM",
       description: `Floor is **${floor}**\n\n~~ Last floor was **${lastFloor}**`,
       footer: slug,
+      thumbnail: { url: imgUrl },
     });
 
     return await channel.send({ embeds: [embed] });
@@ -79,12 +96,14 @@ client.on("interactionCreate", async (interaction) => {
       const result = await response.data;
       const floor = result.collection.stats.floor_price;
 
+      const imgUrl = await getGIS(result.collection.name + " nft");
+
       const embed = new MessageEmbed({
         title: `${result.collection.name} Floor`,
-        thumbnail: result.collection.featured_image_url,
         color: "RANDOM",
         description: `Floor is **${floor}**`,
         footer: slug,
+        thumbnail: { url: imgUrl },
       });
 
       return await interaction.reply({ embeds: [embed] });
@@ -126,7 +145,6 @@ client.on("interactionCreate", async (interaction) => {
 
       const embed = new MessageEmbed({
         title: `${result.collection.name} added successfully`,
-        thumbnail: result.collection.featured_image_url,
         color: "RANDOM",
         description: `You will get updates every ${INTERVAL_MIN} minutes`,
       });
