@@ -17,7 +17,7 @@ const removeSlug = (slug) => {
   collectionLastFloor.delete(slug);
 };
 
-const getFloorInterval = async (message, slug) => {
+const getFloorInterval = async (interaction, slug) => {
   try {
     //Try get opensea collection
     const response = await axios.get(`${COLLECTION_BASE_URL}${slug}`);
@@ -25,6 +25,7 @@ const getFloorInterval = async (message, slug) => {
 
     const result = await response.data;
     const floor = result.collection.stats.floor_price;
+    console.log(floor);
 
     let emoji = EQUALS_EMOJI;
     let trendText = "";
@@ -34,8 +35,7 @@ const getFloorInterval = async (message, slug) => {
     } else if (floor < collectionLastFloor.get(slug)) {
       emoji = DOWN_EMOJI;
       trendText = "*FALLING DOWN*";
-    }
-    else return
+    } else return;
 
     collectionLastFloor.set(slug, floor);
 
@@ -46,7 +46,7 @@ const getFloorInterval = async (message, slug) => {
       description: `Floor is **${floor}**`,
     });
 
-    return await message.channel.send({ embeds: [embed] });
+    return await interaction.reply({ embeds: [embed] });
   } catch (err) {
     console.error(err);
   }
@@ -56,20 +56,13 @@ const client = new Client({
   intents: [Intents.FLAGS.GUILDS, Intents.FLAGS.GUILD_MESSAGES],
 });
 
-client.on("messageCreate", async (message) => {
-  if (message.content.startsWith("!floor")) {
-    try {
-      let msgSplit = message.content.split(" ", 2);
+client.on("interactionCreate", async (interaction) => {
+  if (!interaction.isCommand()) return;
+  const { commandName } = interaction;
 
-      if (msgSplit.length !== 2) {
-        const errorEmbed = new MessageEmbed({
-          title: "Invalid !floor slug provided",
-          color: "RED",
-          description: "Please try !floor [slug]",
-        });
-        return message.channel.send({ embeds: [errorEmbed] });
-      }
-      const slug = msgSplit[1];
+  if (commandName === "floor") {
+    try {
+      const slug = interaction.options.getString("slug");
 
       //Try get opensea collection
       const response = await axios.get(`${COLLECTION_BASE_URL}${slug}`);
@@ -79,7 +72,7 @@ client.on("messageCreate", async (message) => {
           color: "RED",
           description: "Couldn't find slug provided",
         });
-        return message.channel.send({ embeds: [errorEmbed] });
+        return interaction.reply({ embeds: [errorEmbed] });
       }
       const result = await response.data;
       const floor = result.collection.stats.floor_price;
@@ -91,25 +84,13 @@ client.on("messageCreate", async (message) => {
         description: `Floor is **${floor}**`,
       });
 
-      return await message.channel.send({ embeds: [embed] });
+      return await interaction.reply({ embeds: [embed] });
     } catch (err) {
       console.error(err);
     }
-  }
-
-  if (message.content.startsWith("!addFloor")) {
+  } else if (commandName === "add") {
     try {
-      let msgSplit = message.content.split(" ", 2);
-
-      if (msgSplit.length !== 2) {
-        const errorEmbed = new MessageEmbed({
-          title: "Invalid !floor slug provided",
-          color: "RED",
-          description: "Please try !floor [slug]",
-        });
-        return message.channel.send({ embeds: [errorEmbed] });
-      }
-      const slug = msgSplit[1];
+      const slug = interaction.options.getString("slug");
 
       if (openseaCollections.has(slug)) {
         const errorEmbed = new MessageEmbed({
@@ -117,7 +98,7 @@ client.on("messageCreate", async (message) => {
           color: "RED",
           description: "Slug already added",
         });
-        return message.channel.send({ embeds: [errorEmbed] });
+        return interaction.reply({ embeds: [errorEmbed] });
       }
 
       //Try get opensea collection
@@ -128,16 +109,15 @@ client.on("messageCreate", async (message) => {
           color: "RED",
           description: "Couldn't find slug provided",
         });
-        return message.channel.send({ embeds: [errorEmbed] });
+        return interaction.reply({ embeds: [errorEmbed] });
       }
       const result = await response.data;
       const floor = result.collection.stats.floor_price;
-
       // add last floor
       collectionLastFloor.set(slug, floor);
 
       const interval = setInterval(() => {
-        getFloorInterval(message, slug);
+        getFloorInterval(interaction, slug);
       }, INTERVAL_MIN * 60 * 1000);
       openseaCollections.set(slug, interval);
 
@@ -148,26 +128,46 @@ client.on("messageCreate", async (message) => {
         description: `You will get updates every ${INTERVAL_MIN} minutes`,
       });
 
-      return await message.channel.send({ embeds: [embed] });
+      return await interaction.reply({ embeds: [embed] });
     } catch (err) {
       console.error(err);
     }
-  }
-
-  if (message.content.startsWith("!removeFloor")) {
+  } else if (commandName === "remove") {
     try {
-      let msgSplit = message.content.split(" ", 2);
-      const slug = msgSplit[1];
+      const slug = interaction.options.getString("slug");
       removeSlug(slug);
       const embed = new MessageEmbed({
         title: `${slug} removed successfully`,
         color: "RANDOM",
       });
 
-      return await message.channel.send({ embeds: [embed] });
+      return await interaction.reply({ embeds: [embed] });
     } catch (err) {
       console.error(err);
     }
+  } else if (commandName === "list") {
+    if (openseaCollections.size === 0)
+      return interaction.reply("List is empty");
+    const embed = new MessageEmbed({
+      color: 3447003,
+      title: "Floor Prices List:",
+      fields: [
+        {
+          name: "Slugs",
+          value: [...openseaCollections.keys()].join("\n"),
+          inline: true,
+        },
+        {
+          name: "Floor",
+          value: [...collectionLastFloor.values()].join("\n"),
+          inline: true,
+        },
+      ],
+    });
+
+    interaction.reply({
+      embeds: [embed],
+    });
   }
 });
 
