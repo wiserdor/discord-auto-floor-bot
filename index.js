@@ -5,7 +5,7 @@ const axios = require("axios");
 const openseaCollections = new Map();
 const collectionLastFloor = new Map();
 const COLLECTION_BASE_URL = "https://api.opensea.io/api/v1/collection/";
-const INTERVAL_MIN = 5;
+const INTERVAL_MIN = 0.5;
 const EQUALS_EMOJI = "";
 const ROCKET_EMOJI = ":rocket:";
 const DOWN_EMOJI = ":chart_with_downwards_trend:";
@@ -17,8 +17,9 @@ const removeSlug = (slug) => {
   collectionLastFloor.delete(slug);
 };
 
-const getFloorInterval = async (interaction, slug) => {
+const getFloorInterval = async (channel, slug) => {
   try {
+    console.log("interval: get floor of" + slug);
     //Try get opensea collection
     const response = await axios.get(`${COLLECTION_BASE_URL}${slug}`);
     if (response.status !== 200) return;
@@ -47,7 +48,7 @@ const getFloorInterval = async (interaction, slug) => {
       footer: slug,
     });
 
-    return await interaction.followUp({ embeds: [embed] });
+    return await channel.send({ embeds: [embed] });
   } catch (err) {
     console.error(err);
   }
@@ -119,7 +120,7 @@ client.on("interactionCreate", async (interaction) => {
       collectionLastFloor.set(slug, floor);
 
       const interval = setInterval(() => {
-        getFloorInterval(interaction, slug);
+        getFloorInterval(interaction.channel, slug);
       }, INTERVAL_MIN * 60 * 1000);
       openseaCollections.set(slug, interval);
 
