@@ -69,6 +69,7 @@ const getFloorInterval = async (channel, slug) => {
       thumbnail: { url: imgUrl },
     });
 
+    const channel = await client.channels.fetch("925519845318098954");
     return await channel.send({ embeds: [embed] });
   } catch (err) {
     console.error(err);
@@ -202,6 +203,7 @@ client.on("interactionCreate", async (interaction) => {
 
 client.once("ready", async () => {
   console.log("lets go");
+  client.channels.cache.get("925519845318098954").send("hi");
 });
 
 client.login(token);
