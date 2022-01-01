@@ -18,7 +18,9 @@ const getGIS = (nftName) =>
         if (error) {
           return resolve("");
         } else {
-          return resolve(results[0].url);
+          return resolve(
+            results.filter((i) => i.url === "jpeg" || i.url === "png")[0].url
+          );
         }
       });
     } catch {
