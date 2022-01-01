@@ -27,9 +27,6 @@ const getFloorInterval = async (interaction, slug) => {
     const floor = result.collection.stats.floor_price;
     const lastFloor = collectionLastFloor.get(slug);
 
-    console.log(floor)
-    console.log(lastFloor)
-
     let emoji = EQUALS_EMOJI;
     let trendText = "";
     if (floor > lastFloor) {
