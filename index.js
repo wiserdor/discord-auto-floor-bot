@@ -5,7 +5,7 @@ const axios = require("axios");
 const openseaCollections = new Map();
 const collectionLastFloor = new Map();
 const COLLECTION_BASE_URL = "https://api.opensea.io/api/v1/collection/";
-const INTERVAL_MIN = 3;
+const INTERVAL_MIN = 0.3;
 const EQUALS_EMOJI = "";
 const ROCKET_EMOJI = ":rocket:";
 const DOWN_EMOJI = ":chart_with_downwards_trend:";
@@ -27,6 +27,9 @@ const getFloorInterval = async (interaction, slug) => {
     const floor = result.collection.stats.floor_price;
     const lastFloor = collectionLastFloor.get(slug);
 
+    console.log(floor)
+    console.log(lastFloor)
+
     let emoji = EQUALS_EMOJI;
     let trendText = "";
     if (floor > lastFloor) {
@@ -40,14 +43,14 @@ const getFloorInterval = async (interaction, slug) => {
     collectionLastFloor.set(slug, floor);
 
     const embed = new MessageEmbed({
-      title: `${result.collection.name} Floor is ${trendText}${emoji}`,
+      title: `${result.collection.name} Floor is ${trendText} ${emoji}`,
       thumbnail: result.collection.featured_image_url,
       color: "RANDOM",
-      description: `Floor is **${floor}**\n last floor was **${lastFloor}**`,
+      description: `Floor is **${floor}**\n\n~~ Last floor was **${lastFloor}**`,
       footer: slug,
     });
 
-    return await interaction.reply({ embeds: [embed] });
+    return await interaction.followUp({ embeds: [embed] });
   } catch (err) {
     console.error(err);
   }
