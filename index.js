@@ -25,14 +25,14 @@ const getFloorInterval = async (interaction, slug) => {
 
     const result = await response.data;
     const floor = result.collection.stats.floor_price;
-    console.log(floor);
+    const lastFloor = collectionLastFloor.get(slug);
 
     let emoji = EQUALS_EMOJI;
     let trendText = "";
-    if (floor > collectionLastFloor.get(slug)) {
+    if (floor > lastFloor) {
       emoji = ROCKET_EMOJI;
       trendText = "*GOING UP*";
-    } else if (floor < collectionLastFloor.get(slug)) {
+    } else if (floor < lastFloor) {
       emoji = DOWN_EMOJI;
       trendText = "*FALLING DOWN*";
     } else return;
@@ -43,7 +43,7 @@ const getFloorInterval = async (interaction, slug) => {
       title: `${result.collection.name} Floor is ${trendText}${emoji}`,
       thumbnail: result.collection.featured_image_url,
       color: "RANDOM",
-      description: `Floor is **${floor}**`,
+      description: `Floor is **${floor}**\n last floor was **${lastFloor}**`,
       footer: slug,
     });
 
