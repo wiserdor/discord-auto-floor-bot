@@ -59,7 +59,7 @@ const getFloorInterval = async (slug) => {
     const embed = new MessageEmbed({
       title: `${result.collection.name} Floor is ${trendText} ${emoji}`,
       color: "RANDOM",
-      description: `Floor is **${floor}**\n\n~~ Last floor was **${lastFloor}** it's a ${changePct}% difference`,
+      description: `Floor is **${floor}**\n\n~~ Last floor was **${lastFloor}** it's a ${changePct.toFixed(2)}% difference`,
       footer: slug,
       thumbnail: { url: imgUrl },
     });
