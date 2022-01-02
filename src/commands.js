@@ -1,7 +1,6 @@
 const axios = require("axios");
 const { MessageEmbed } = require("discord.js");
 const { getGIS } = require("./utils");
-const { client } = require("../index");
 
 const openseaCollections = new Map();
 const collectionLastFloor = new Map();
