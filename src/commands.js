@@ -65,7 +65,7 @@ const getFloorInterval = async (slug) => {
       thumbnail: { url: imgUrl },
     });
 
-    const channel = await client.channels.fetch("926367591352631326");
+    const channel = await client.channels.fetch("925519845318098954");
     return await channel.send({ embeds: [embed] });
   } catch (err) {
     console.error(err);
