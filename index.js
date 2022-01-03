@@ -6,6 +6,7 @@ const {
   removeCommand,
   listCommand,
   injectClient,
+  changeRate,
 } = require("./src/commands");
 
 const client = new Client({
@@ -44,6 +45,14 @@ client.on("interactionCreate", async (interaction) => {
     case "list":
       try {
         await listCommand(interaction);
+      } catch (err) {
+        console.error(err);
+      }
+      break;
+
+    case "rate":
+      try {
+        await changeRate(interaction);
       } catch (err) {
         console.error(err);
       }

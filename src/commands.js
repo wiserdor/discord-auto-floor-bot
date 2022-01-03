@@ -65,6 +65,7 @@ const getFloorInterval = async (slug) => {
       )}% difference`,
       footer: slug,
       thumbnail: { url: imgUrl },
+      url: `https://opensea.io/${slug}`,
     });
 
     const channel = await client.channels.fetch("925519845318098954");
@@ -115,6 +116,7 @@ exports.floorCommand = async (interaction) => {
     title: `${result.collection.name} Floor`,
     color: "RANDOM",
     description: `Floor is **${floor}**`,
+    url: `https://opensea.io/${slug}`,
     footer: slug,
     thumbnail: { url: imgUrl },
   });
@@ -157,6 +159,7 @@ exports.addCommand = async (interaction) => {
   const embed = new MessageEmbed({
     title: `${result.collection.name} added successfully`,
     color: "RANDOM",
+    url: `https://opensea.io/${slug}`,
     description: `You will get updates every ${INTERVAL_MIN} minutes`,
   });
 
