@@ -76,7 +76,7 @@ const getFloorInterval = async (slug) => {
 };
 
 exports.changeRate = async (interaction) => {
-  const changeRate = interaction.options.getString("rate");
+  const changeRate = interaction.options.getNumber("rate");
   if (rate <= 1) {
     const errorEmbed = new MessageEmbed({
       title: "Invalid rate",
