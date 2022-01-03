@@ -36,7 +36,10 @@ const commands = [
     .setDescription("See all registered collections"),
   new SlashCommandBuilder()
     .setName("rate")
-    .setDescription("Change when should notify every percentage rate"),
+    .setDescription("Change when should notify every percentage rate")
+    .addNumberOption((option) =>
+      option.setName("rate").setDescription("Rate percentage").setRequired(true)
+    ),
 ];
 
 const rest = new REST({ version: "9" }).setToken(token);
