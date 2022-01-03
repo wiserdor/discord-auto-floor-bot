@@ -9,6 +9,7 @@ const INTERVAL_MIN = 5;
 const EQUALS_EMOJI = "";
 const ROCKET_EMOJI = ":rocket:";
 const DOWN_EMOJI = ":chart_with_downwards_trend:";
+let rate = 10; //percentage
 
 let client;
 
@@ -41,7 +42,7 @@ const getFloorInterval = async (slug) => {
         changePct = 100;
       } else return;
     } else changePct = Math.abs(((floor - lastFloor) / lastFloor) * 100);
-    if (changePct < 2) return;
+    if (changePct < rate) return;
 
     let emoji = EQUALS_EMOJI;
     let trendText = "";
@@ -59,7 +60,9 @@ const getFloorInterval = async (slug) => {
     const embed = new MessageEmbed({
       title: `${result.collection.name} Floor is ${trendText} ${emoji}`,
       color: "RANDOM",
-      description: `Floor is **${floor}**\n\n~~ Last floor was **${lastFloor}** it's a ${changePct.toFixed(2)}% difference`,
+      description: `Floor is **${floor}**\n\n~~ Last floor was **${lastFloor}** it's a ${changePct.toFixed(
+        2
+      )}% difference`,
       footer: slug,
       thumbnail: { url: imgUrl },
     });
@@ -69,6 +72,25 @@ const getFloorInterval = async (slug) => {
   } catch (err) {
     console.error(err);
   }
+};
+
+exports.changeRate = async (interaction) => {
+  const changeRate = interaction.options.getString("rate");
+  if (rate <= 1) {
+    const errorEmbed = new MessageEmbed({
+      title: "Invalid rate",
+      color: "RED",
+      description: "rate should be equal or greater than 1",
+    });
+    return interaction.reply({ embeds: [errorEmbed] });
+  }
+  rate = changeRate;
+  const embed = new MessageEmbed({
+    title: "Rate changed",
+    color: "GOLD",
+    description: `Now we will notify when floor changed at ${rate} percent`,
+  });
+  return interaction.reply({ embeds: [embed] });
 };
 
 exports.floorCommand = async (interaction) => {
