@@ -9,7 +9,7 @@ const INTERVAL_MIN = 5;
 const EQUALS_EMOJI = "";
 const ROCKET_EMOJI = ":rocket:";
 const DOWN_EMOJI = ":chart_with_downwards_trend:";
-let rate = 10; //percentage
+let rate = 7; //percentage
 
 let client;
 
@@ -65,7 +65,7 @@ const getFloorInterval = async (slug) => {
       )}% difference`,
       footer: slug,
       thumbnail: { url: imgUrl },
-      url: `https://opensea.io/${slug}`,
+      url: `https://opensea.io/collection/${slug}`,
     });
 
     const channel = await client.channels.fetch("925519845318098954");
@@ -116,7 +116,7 @@ exports.floorCommand = async (interaction) => {
     title: `${result.collection.name} Floor`,
     color: "RANDOM",
     description: `Floor is **${floor}**`,
-    url: `https://opensea.io/${slug}`,
+    url: `https://opensea.io/collection/${slug}`,
     footer: slug,
     thumbnail: { url: imgUrl },
   });
@@ -159,7 +159,7 @@ exports.addCommand = async (interaction) => {
   const embed = new MessageEmbed({
     title: `${result.collection.name} added successfully`,
     color: "RANDOM",
-    url: `https://opensea.io/${slug}`,
+    url: `https://opensea.io/collection/${slug}`,
     description: `You will get updates every ${INTERVAL_MIN} minutes`,
   });
 
